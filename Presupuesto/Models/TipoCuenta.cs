@@ -9,7 +9,7 @@ namespace Presupuesto.Models
         public int Id { get; set; }
 
         [Required(ErrorMessage = "El campo (0) es requerido")]
-        [StringLength(maximumLength:50,MinimumLength = 3,ErrorMessage = "la lonfgitud del campo (0) debe estar entre (2) y (1)")]
+        [StringLength(maximumLength:50,MinimumLength = 3,ErrorMessage = "la longitud del campo (0) debe estar entre (2) y (1)")]
         [Display(Name = "Nombre de el tipo de la cuenta")]
         //[ValidarMayuscula]
         public string Nombre { get; set; }

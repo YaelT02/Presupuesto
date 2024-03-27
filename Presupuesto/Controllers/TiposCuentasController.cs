@@ -4,6 +4,7 @@ using Microsoft.Data.SqlClient;
 using Presupuesto.Filters;
 using Presupuesto.Infraestructure;
 using Presupuesto.Models;
+using Presupuesto.Services;
 
 namespace Presupuesto.Controllers
 {
@@ -51,7 +52,7 @@ namespace Presupuesto.Controllers
             //return View(tipoCuenta);
             await _tiposCuentaServices.CrearAsync(tipoCuenta);
 
-            return RedirectToAction("Index");
+            return RedirectToAction("ObtenerCuentas");
             //Hardcodeamos el usuario con su Id
         }
 
@@ -74,22 +75,89 @@ namespace Presupuesto.Controllers
             return View(tiposCuentas);
         }
 
-        public async Task Actualizar(TipoCuenta tipoCuenta)
+        [HttpGet]
+        public async Task<IActionResult> ObtenerCuentas()
         {
-            using var connection = new SqlConnection(connectionString);
-            await connection.ExecuteAsync(@"UPDATE TiposCuentas SET
-                              Nombre=@Nombre WHERE id = @Id", tipoCuenta);
+            return View();
         }
 
-        public async Task<TipoCuenta> ObtenerPorId(int id, int usuarioId)
+        [HttpGet]
+        [ServiceFilter(typeof(GlobalExceptionFilter))]
+        public async Task<ActionResult> Editar(int id)
         {
-            using var connection = new SqlConnection(connectionString);
-            return await connection.QueryFirstOrDefaultAsync<TipoCuenta>(@"SELECT Id, Nombre,
-                            Orden FROM TiposCuentas WHERE Id=@Id AND UsuarioId = @UsuarioId",
-                            new { id, usuarioId });
+            var usuarioid = _usuariosServices.ObtenerUsuarioId();
+            var tipoCuenta = await _tiposCuentaServices.ObtenerPorId(id, usuarioid);
+            if (tipoCuenta is null)
+            {
+                RedirectToAction("NoEncontrado", "Home");
+            }
+            return View(tipoCuenta);
+        }
+
+        [HttpPost]
+        [ServiceFilter(typeof(GlobalExceptionFilter))]
+        public async Task<IActionResult> Editar(TipoCuenta tipoCuenta)
+        {
+            var usuarioId = _usuariosServices.ObtenerUsuarioId();
+            var tipoCuentaExiste = await _tiposCuentaServices.ObtenerPorId(tipoCuenta.Id, usuarioId);
+            if (tipoCuentaExiste is null)
+            {
+                return RedirectToAction("NoEncontrado", "Home");
+            }
+            await _tiposCuentaServices.Actualizar(tipoCuenta);
+            return RedirectToAction("ObtenerCuentas");
+        }
+
+        [ServiceFilter(typeof(GlobalExceptionFilter))]
+        public async Task<IActionResult> Borrar(int id)
+        {
+            var usuarioId = _usuariosServices.ObtenerUsuarioId();
+            var tipoCuenta = await _tiposCuentaServices.ObtenerPorId(id, usuarioId);
+            if (tipoCuenta is null)
+            {
+                return RedirectToAction("NoEncontrado", "Home");
+            }
+            return View(tipoCuenta);
+        }
+
+        [HttpPost]
+        [ServiceFilter(typeof(GlobalExceptionFilter))]
+        public async Task<IActionResult> BorrarTipoCuenta(int id)
+        {
+            var usuarioId = _usuariosServices.ObtenerUsuarioId();
+            var tipoCuenta = await _tiposCuentaServices.ObtenerPorId(id, usuarioId);
+            if (tipoCuenta is null)
+            {
+                return RedirectToAction("NoEncontrado" , "Home");
+            }
+            await _tiposCuentaServices.Borrar(id);
+            return RedirectToAction("ObtenerCuentas");
+        }
+
+
+        [HttpGet]
+        public async Task<ActionResult<PagedResults<TipoCuenta>>> GetTipoCuentas(int start, int length, int draw)
+        {
+            try
+            {
+                var pageNumber = start / length + 1;
+                var pageSize = length;
+
+                var result = await _tiposCuentaServices.ObtenerTodos(pageNumber, pageSize, draw);
+
+                return Json(new
+                {
+                    draw,
+                    recordsTotal = result.TotalItems,
+                    recordsFiltered = result.TotalItems,
+                    data = result.Items
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error interno del servidor: {ex.Message}");
+            }
         }
 
     }
-
-
 }

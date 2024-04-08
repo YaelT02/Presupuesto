@@ -48,7 +48,6 @@ namespace Presupuesto.Controllers
                 return View(tipoCuenta);
             }
             tipoCuenta.UsuarioId = _usuariosServices.ObtenerUsuarioId();
-            //await _tiposCuentaServices.CrearAsync(tipoCuenta);
             //return View(tipoCuenta);
             await _tiposCuentaServices.CrearAsync(tipoCuenta);
 

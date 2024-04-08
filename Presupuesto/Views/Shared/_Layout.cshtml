@@ -43,11 +43,17 @@
         </div>
         <ul>
             <li>
-                <img src="img/logo.jpg" alt="Logo Fazt" class="logo">
+                <img src="img/img.jpg" alt="Logo Fazt" class="logo">
             </li>
-            <li>Home</li>
-            <li>About</li>
-            <li>Contact</li>
+            <li class="nav-item">
+                <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" asp-area="" asp-controller="TiposCuentas" asp-action="ObtenerCuentas">Paginación</a>
+            </li>
         </ul>
     </div>
 
@@ -63,7 +69,6 @@
         </div>
     </footer>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    @* <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script> *@
     <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/2.0.2/js/dataTables.js"></script>

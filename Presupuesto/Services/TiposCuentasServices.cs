@@ -53,7 +53,7 @@ namespace Presupuesto.Services
         {
             using var connection = new SqlConnection(connectionString);
             return await connection.QueryFirstOrDefaultAsync<TipoCuenta>(@"SELECT Id, Nombre,
-                            Orden FROM TiposCuenta WHERE Id=@Id AND UsuarioId = @UsuarioId",
+                            Orden FROM TiposCuenta WHERE Id=@Id",
                             new { id, usuarioId });
         }
 

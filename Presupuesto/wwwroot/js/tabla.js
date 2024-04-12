@@ -1,7 +1,6 @@
 ﻿
 $(document).ready(function () {
     $('#tablaTipoCuentas').DataTable({
-        "processing": true,
         "serverSide": true,
         "ajax": {
             "url": "/TiposCuentas/GetTipoCuentas",
